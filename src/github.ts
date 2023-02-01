@@ -1,8 +1,8 @@
-/* eslint-disable no-console */
-import { $fetch } from 'ohmyfetch'
-import { cyan, green } from 'kolorist'
 import { notNullish } from '@antfu/utils'
-import type { AuthorInfo, ChangelogOptions, Commit } from './types'
+import { cyan, green } from 'kolorist'
+import { Octokit } from 'octokit'
+import { $fetch } from 'ohmyfetch'
+import type { AuthorInfo, ChangelogOptions, Commit, ResolvedChangelogOptions } from './types'
 
 export async function sendRelease(
   options: ChangelogOptions,
@@ -19,8 +19,7 @@ export async function sendRelease(
       url = exists.url
       method = 'PATCH'
     }
-  }
-  catch (e) {
+  } catch (e) {
   }
 
   const body = {
@@ -60,8 +59,7 @@ export async function resolveAuthorInfo(options: ChangelogOptions, info: AuthorI
       headers: getHeaders(options),
     })
     info.login = data.items[0].login
-  }
-  catch {}
+  } catch {}
 
   if (info.login)
     return info
@@ -72,8 +70,7 @@ export async function resolveAuthorInfo(options: ChangelogOptions, info: AuthorI
         headers: getHeaders(options),
       })
       info.login = data.author.login
-    }
-    catch (e) {}
+    } catch (e) {}
   }
 
   return info
@@ -113,8 +110,7 @@ export async function resolveAuthors(commits: Commit[], options: ChangelogOption
         return false
       if (i.login) {
         loginSet.add(i.login)
-      }
-      else {
+      } else {
         if (nameSet.has(i.name))
           return false
         nameSet.add(i.name)
@@ -129,8 +125,59 @@ export async function hasTagOnGitHub(tag: string, options: ChangelogOptions) {
       headers: getHeaders(options),
     })
     return true
-  }
-  catch (e) {
+  } catch (e) {
     return false
   }
+}
+
+export async function getPullRequests(options: ResolvedChangelogOptions) {
+  const octokit = new Octokit({
+    auth: options.token,
+  })
+  const github = {
+    owner: options.github.split('/')[0],
+    repo: options.github.split('/')[1],
+  }
+
+  async function getPR(commit: string) {
+    const result = await octokit.request(
+      'GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls',
+      {
+        owner: github.owner,
+        repo: github.repo,
+        commit_sha: commit,
+      },
+    )
+
+    return result.data[0]
+  }
+
+  const result = await octokit.request(
+    'GET /repos/{owner}/{repo}/compare/{basehead}',
+    {
+      owner: github.owner,
+      repo: github.repo,
+      basehead: `${options.from}...${options.to}`,
+    },
+  )
+
+  const pullRequests = await Promise.all(
+    result.data.commits.map(async commit => getPR(commit.sha)),
+  )
+
+  // sort by merged_at
+  const sortedPRs = pullRequests.sort(
+    (PRa, PRb) => Date.parse(PRa.merged_at!) - Date.parse(PRb.merged_at!),
+  )
+
+  const filteredPRs: typeof sortedPRs = []
+
+  for (const pr of sortedPRs) {
+    if (filteredPRs.find(pull => pull.number === pr.number))
+      continue
+
+    filteredPRs.push(pr)
+  }
+
+  return filteredPRs
 }

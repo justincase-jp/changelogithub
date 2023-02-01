@@ -8,9 +8,18 @@ export function defineConfig(config: ChangelogOptions) {
 const defaultConfig: ChangelogOptions = {
   scopeMap: {},
   types: {
-    feat: { title: '🚀 Features' },
-    fix: { title: '🐞 Bug Fixes' },
-    perf: { title: '🏎 Performance' },
+    feat: { title: '🚀 機能' },
+    perf: { title: '🔥 パフォーマンス' },
+    fix: { title: '🩹 修正' },
+    refactor: { title: '💅 リファクタリング' },
+    docs: { title: '📖 ドキュメント' },
+    build: { title: '📦 Build' },
+    types: { title: '🌊 Types' },
+    chore: { title: '🏡 その他' },
+    examples: { title: '🏀 Examples' },
+    test: { title: '✅ Tests' },
+    style: { title: '🎨 Styles' },
+    ci: { title: '🤖 CI' },
   },
   titles: {
     breakingChanges: '🚨 Breaking Changes',

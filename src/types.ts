@@ -12,8 +12,14 @@ export interface GitHubAuth {
   url: string
 }
 
-export interface Commit extends GitCommit {
+export interface Reference {
+  type: 'hash' | 'pull-request' | 'issue' | 'youtrack'
+  value: string
+}
+
+export interface Commit extends Omit<GitCommit, 'references'> {
   resolvedAuthors?: AuthorInfo[]
+  references?: Reference[]
 }
 
 export interface ChangelogOptions extends Partial<ChangelogenOptions> {

@@ -1,13 +1,13 @@
 export async function getGitHubRepo() {
   const url = await execCommand('git', ['config', '--get', 'remote.origin.url'])
-  const match = url.match(/github\.com[\/:]([\w\d._-]+?)\/([\w\d._-]+?)(\.git)?$/i)
+  const match = url.match(/github\.com[/:]([\w\d._-]+?)\/([\w\d._-]+?)(\.git)?$/i)
   if (!match)
     throw new Error(`Can not parse GitHub repo from url ${url}`)
   return `${match[1]}/${match[2]}`
 }
 
 export async function getCurrentGitBranch() {
-  return await execCommand('git', ['tag', '--points-at', 'HEAD']) || await execCommand('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
+  return execCommand('git', ['tag', '--points-at', 'HEAD']) || execCommand('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
 }
 
 export async function isRepoShallow() {
@@ -23,14 +23,13 @@ export async function isRefGitTag(to: string) {
   const { execa } = await import('execa')
   try {
     await execa('git', ['show-ref', '--verify', `refs/tags/${to}`], { reject: true })
-  }
-  catch {
+  } catch {
     return false
   }
 }
 
 export async function getFirstGitCommit() {
-  return await execCommand('git', ['rev-list', '--max-parents=0', 'HEAD'])
+  return execCommand('git', ['rev-list', '--max-parents=0', 'HEAD'])
 }
 
 export function isPrerelease(version: string) {

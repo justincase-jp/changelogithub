@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+import { cac } from 'cac'
 import { blue, bold, cyan, dim, red, yellow } from 'kolorist'
-import cac from 'cac'
 import { version } from '../package.json'
 import { generate, hasTagOnGitHub, isRepoShallow, sendRelease } from './index'
 
@@ -24,7 +24,7 @@ cli
 
 cli
   .command('')
-  .action(async (args) => {
+  .action(async(args) => {
     args.token = args.token || process.env.GITHUB_TOKEN
 
     try {
@@ -36,7 +36,7 @@ cli
       console.log(cyan(config.from) + dim(' -> ') + blue(config.to) + dim(` (${commits.length} commits)`))
       console.log(dim('--------------'))
       console.log()
-      console.log(md.replace(/\&nbsp;/g, ''))
+      console.log(md.replace(/&nbsp;/g, ''))
       console.log()
       console.log(dim('--------------'))
 
@@ -64,8 +64,7 @@ cli
         process.exitCode = 1
         return
       }
-    }
-    catch (e: any) {
+    } catch (e: any) {
       console.error(red(String(e)))
       if (e?.stack)
         console.error(dim(e.stack?.split('\n').slice(1).join('\n')))

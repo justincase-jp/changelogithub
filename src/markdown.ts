@@ -1,26 +1,31 @@
 import { partition } from '@antfu/utils'
-import type { Reference } from 'changelogen'
 import { convert } from 'convert-gitmoji'
-import type { Commit, ResolvedChangelogOptions } from './types'
+import type { Commit, Reference, ResolvedChangelogOptions } from './types'
 
 const emojisRE = /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g
 
-function formatReferences(references: Reference[], github: string, type: 'issues' | 'hash'): string {
+function formatReferences(references: Reference[], github: string, type: 'issues' | 'hash' | 'youtrack'): string {
   const refs = references
     .filter((i) => {
       if (type === 'issues')
         return i.type === 'issue' || i.type === 'pull-request'
+      if (type === 'youtrack')
+        return i.type === 'youtrack'
       return i.type === 'hash'
     })
     .map((ref) => {
       if (!github)
         return ref.value
-      if (ref.type === 'pull-request' || ref.type === 'issue')
-        return `https://github.com/${github}/issues/${ref.value.slice(1)}`
+      if (ref.type === 'issue')
+        return `[${ref.value}](https://github.com/${github}/issues/${ref.value.slice(1)})`
+      if (ref.type === 'pull-request')
+        return `[${ref.value}](https://github.com/${github}/pull/${ref.value.slice(1)})`
+      if (ref.type === 'youtrack')
+        return `([${ref.value}](https://justincase.myjetbrains.com/issue/${ref.value}))`
       return `[<samp>(${ref.value.slice(0, 5)})</samp>](https://github.com/${github}/commit/${ref.value})`
     })
 
-  const referencesString = join(refs).trim()
+  const referencesString = join(refs, undefined, type === 'youtrack' ? '' : undefined).trim()
 
   if (type === 'issues')
     return referencesString && `in ${referencesString}`
@@ -28,14 +33,15 @@ function formatReferences(references: Reference[], github: string, type: 'issues
 }
 
 function formatLine(commit: Commit, options: ResolvedChangelogOptions) {
-  const prRefs = formatReferences(commit.references, options.github, 'issues')
-  const hashRefs = formatReferences(commit.references, options.github, 'hash')
+  const prRefs = formatReferences(commit.references || [], options.github, 'issues')
+  const hashRefs = formatReferences(commit.references || [], options.github, 'hash')
+  const youtrackRefs = formatReferences(commit.references || [], options.github, 'youtrack')
 
   let authors = join([...new Set(commit.resolvedAuthors?.map(i => i.login ? `@${i.login}` : `**${i.name}**`))])?.trim()
   if (authors)
     authors = `by ${authors}`
 
-  let refs = [authors, prRefs, hashRefs].filter(i => i?.trim()).join(' ')
+  let refs = [authors, prRefs, hashRefs, youtrackRefs].filter(i => i?.trim()).join(' ')
 
   if (refs)
     refs = `&nbsp;-&nbsp; ${refs}`
@@ -76,8 +82,7 @@ function formatSection(commits: Commit[], sectionName: string, options: Resolved
     if (scope && useScopeGroup) {
       lines.push(`- ${scopeText}:`)
       padding = '  '
-    }
-    else if (scope) {
+    } else if (scope) {
       prefix = `${scopeText}: `
     }
 
@@ -96,6 +101,8 @@ export function generateMarkdown(commits: Commit[], options: ResolvedChangelogOp
   const [breaking, changes] = partition(commits, c => c.isBreaking)
 
   const group = groupBy(changes, 'type')
+
+  // console.log(group)
 
   lines.push(
     ...formatSection(breaking, options.titles.breakingChanges!, options),
