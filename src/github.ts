@@ -161,9 +161,9 @@ export async function getPullRequests(options: ResolvedChangelogOptions) {
     },
   )
 
-  const pullRequests = await Promise.all(
+  const pullRequests = (await Promise.all(
     result.data.commits.map(async commit => getPR(commit.sha)),
-  )
+  )).filter(notNullish)
 
   // sort by merged_at
   const sortedPRs = pullRequests.sort(
