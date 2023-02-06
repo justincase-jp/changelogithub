@@ -21,13 +21,12 @@ export async function generate(options: ChangelogOptions) {
 
   commits.forEach((c) => {
     c.references = c.references || []
-    let matchs = Array.from(c.body.split('Motivation')[1].matchAll(ticketRE)).map(m => m[0])
+    let matchs = c.body.includes('Motivation') ? Array.from(c.body.split('Motivation')[1].matchAll(ticketRE)).map(m => m[0]) : []
     matchs = [...new Set(matchs)]
     for (const m of matchs)
       c.references?.push({ type: 'youtrack', value: m })
   })
 
-  console.log(commits)
   if (resolved.contributors)
     await resolveAuthors(commits, resolved)
   const md = generateMarkdown(commits, resolved)
