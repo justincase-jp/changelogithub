@@ -102,8 +102,6 @@ export function generateMarkdown(commits: Commit[], options: ResolvedChangelogOp
 
   const group = groupBy(changes, 'type')
 
-  // console.log(group)
-
   lines.push(
     ...formatSection(breaking, options.titles.breakingChanges!, options),
   )
