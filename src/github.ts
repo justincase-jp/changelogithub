@@ -139,8 +139,6 @@ export async function getPullRequests(options: ResolvedChangelogOptions) {
     repo: options.github.split('/')[1],
   }
 
-  console.log(options)
-
   async function getPR(commit: string) {
     const result = await octokit.request(
       'GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls',
