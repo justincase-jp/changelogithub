@@ -11,7 +11,7 @@ cli
   .option('-t, --token <path>', 'GitHub Token')
   .option('--from <ref>', 'From tag')
   .option('--to <ref>', 'To tag')
-  .option('--github <path>', 'GitHub Repository, e.g. antfu/changelogithub')
+  .option('--github <path>', 'GitHub Repository, e.g. justincase-jp/changelogithub')
   .option('--name <name>', 'Name of the release')
   .option('--contributors', 'Show contributors section')
   .option('--prerelease', 'Mark release as prerelease')

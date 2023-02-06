@@ -13,14 +13,13 @@
     "log"
   ],
   "license": "MIT",
-  "author": "Anthony Fu <anthonyfu117@hotmail.com>",
+  "author": "justInCase, Inc. <developers@justincase.jp>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antfu/changelogithub.git"
+    "url": "git+https://github.com/justincase-jp/changelogithub.git"
   },
-  "funding": "https://github.com/sponsors/antfu",
-  "homepage": "https://github.com/antfu/changelogithub#readme",
-  "bugs": "https://github.com/antfu/changelogithub/issues",
+  "homepage": "https://github.com/justincase-jp/changelogithub#readme",
+  "bugs": "https://github.com/justincase-jp/changelogithub/issues",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -45,10 +44,11 @@
     "dev": "unbuild --stub",
     "test": "vitest",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepublishOnly": "nr build",
     "release": "bumpp --commit --push --tag",
     "start": "nr dev && node cli.mjs",
-    "typecheck": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@antfu/utils": "^0.7.2",

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { generate } from '../src'
 
-test('parse', async () => {
+test('parse', async() => {
   const COMMIT_FROM = '19cf4f84f16f1a8e1e7032bbef550c382938649d'
   const COMMIT_TO = '49b0222e8d60b7f299941def7511cee0460a8149'
 

@@ -1,6 +1,8 @@
 # changelogithub
 
-[![NPM version](https://img.shields.io/npm/v/changelogithub?color=a1b858&label=)](https://www.npmjs.com/package/changelogithub)
+**This is forked from [changelogithub](https://github.com/antfu/changelogithub) and modified for our use.**
+
+[![NPM version](https://img.shields.io/npm/v/@jict/changelogithub?color=a1b858&label=@jict/changelogithub)](https://www.npmjs.com/package/@jict/changelogithub)
 
 Generate changelog for GitHub releases from [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), powered by [changelogen](https://github.com/unjs/changelogen).
 
@@ -8,6 +10,7 @@ Generate changelog for GitHub releases from [Conventional Commits](https://www.c
 
 ## Features
 
+- Pull requests based changelog generation
 - Support exclamation mark as breaking change, e.g. `chore!: drop node v10`
 - Grouped scope in changelog
 - Create the release note, or update the existing one
@@ -38,13 +41,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      - name: Set node version
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version-file: .nvmrc
 
-      - run: npx changelogithub # or changelogithub@0.12 if ensure the stable result
+      - run: npx @jict/changelogithub
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 It will be trigged whenever you push a tag to GitHub that starts with `v`.
@@ -56,13 +60,9 @@ You can put a configuration file in the project root, named as `changelogithub.c
 ## Preview Locally
 
 ```bash
-npx changelogithub --dry
+npx @jict/changelogithub --dry
 ```
-
-## Why?
-
-I used to use [`conventional-github-releaser`](https://github.com/conventional-changelog/releaser-tools/tree/master/packages/conventional-github-releaser) for almost all my projects. Until I found that it [does NOT support using exclamation mark for breaking changes](https://github.com/conventional-changelog/conventional-changelog/issues/648) - hiding those important breaking changes in the changelog without the awareness from maintainers.
 
 ## License
 
-[MIT](./LICENSE) License © 2022 [Anthony Fu](https://github.com/antfu)
+[MIT](./LICENSE) License © 2023 [justInCase, Inc.](https://github.com/justincase-jp)
