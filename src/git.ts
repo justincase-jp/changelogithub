@@ -7,7 +7,8 @@ export async function getGitHubRepo() {
 }
 
 export async function getCurrentGitBranch() {
-  return execCommand('git', ['tag', '--points-at', 'HEAD']) || execCommand('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
+  // eslint-disable-next-line no-return-await
+  return await execCommand('git', ['tag', '--points-at', 'HEAD']) || await execCommand('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
 }
 
 export async function isRepoShallow() {
