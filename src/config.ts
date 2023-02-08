@@ -27,7 +27,7 @@ const defaultConfig: ChangelogOptions = {
   contributors: true,
   capitalize: true,
   group: true,
-  ticketPrefix: ['ENGAGE', 'Marsh', 'mp'],
+  ticketPrefix: [],
   ticketSectionTitle: 'Motivation',
 }
 
