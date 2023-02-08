@@ -56,6 +56,14 @@ export interface ChangelogOptions extends Partial<ChangelogenOptions> {
     breakingChanges?: string
   }
   /**
+   * Ticket prefixes
+   */
+  ticketPrefix?: string[]
+  /**
+   * Ticket section title
+   */
+  ticketSectionTitle?: string
+  /**
    * Capitalize commit messages
    * @default true
    */

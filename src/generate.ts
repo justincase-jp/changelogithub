@@ -5,8 +5,6 @@ import { getPullRequests, resolveAuthors } from './github'
 import { generateMarkdown } from './markdown'
 import type { ChangelogOptions, Commit } from './types'
 
-const ticketRE = /(?:ENGAGE|Marsh|mp)-\d+/gm
-
 export async function generate(options: ChangelogOptions) {
   const resolved = await resolveConfig(options)
 
@@ -21,7 +19,12 @@ export async function generate(options: ChangelogOptions) {
 
   commits.forEach((c) => {
     c.references = c.references || []
-    let matchs = c.body.includes('Motivation') ? Array.from(c.body.split('Motivation')[1].matchAll(ticketRE)).map(m => m[0]) : []
+    const ticketRE = new RegExp(`(?:${resolved.ticketPrefix.join('|')})-\\d+`, 'gm')
+    const ticketSection = c.body.split('#').find(a => a.includes(` ${resolved.ticketSectionTitle}`))
+    console.log(ticketSection)
+    let matchs = Array.from(ticketSection
+      ?.matchAll(ticketRE) || [])
+      .map(m => m[0])
     matchs = [...new Set(matchs)]
     for (const m of matchs)
       c.references?.push({ type: 'youtrack', value: m })

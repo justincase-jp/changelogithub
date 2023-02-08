@@ -27,6 +27,8 @@ const defaultConfig: ChangelogOptions = {
   contributors: true,
   capitalize: true,
   group: true,
+  ticketPrefix: ['ENGAGE', 'Marsh', 'mp'],
+  ticketSectionTitle: 'Motivation',
 }
 
 export async function resolveConfig(options: ChangelogOptions) {
