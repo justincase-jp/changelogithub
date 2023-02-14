@@ -21,7 +21,6 @@ export async function generate(options: ChangelogOptions) {
     c.references = c.references || []
     const ticketRE = new RegExp(`(?:${resolved.ticketPrefix.join('|')})-\\d+`, 'gm')
     const ticketSection = c.body.split('#').find(a => a.includes(` ${resolved.ticketSectionTitle}`))
-    console.log(ticketSection)
     let matchs = Array.from(ticketSection
       ?.matchAll(ticketRE) || [])
       .map(m => m[0])
