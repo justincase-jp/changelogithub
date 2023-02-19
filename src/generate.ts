@@ -3,7 +3,7 @@ import { parseGitCommit } from 'changelogen'
 import { resolveConfig } from './config'
 import { getPullRequests, resolveAuthors } from './github'
 import { generateMarkdown } from './markdown'
-import type { ChangelogOptions, Commit } from './types'
+import type { ChangelogOptions, Commit, ResolvedChangelogOptions } from './types'
 
 export async function generate(options: ChangelogOptions) {
   const resolved = await resolveConfig(options)
@@ -17,21 +17,27 @@ export async function generate(options: ChangelogOptions) {
     author: { name: pr.user?.login || '', email: '' },
   }, resolved)).filter(notNullish)
 
-  commits.forEach((c) => {
-    c.references = c.references || []
-    const ticketRE = new RegExp(`(?:${resolved.ticketPrefix.join('|')})-\\d+`, 'gm')
-    const ticketSection = c.body.split('#').find(a => a.includes(` ${resolved.ticketSectionTitle}`))
-    let matchs = Array.from(ticketSection
-      ?.matchAll(ticketRE) || [])
-      .map(m => m[0])
-    matchs = [...new Set(matchs)]
-    for (const m of matchs)
-      c.references?.push({ type: 'youtrack', value: m })
-  })
+  extractTicketNumber(commits, resolved)
 
   if (resolved.contributors)
     await resolveAuthors(commits, resolved)
   const md = generateMarkdown(commits, resolved)
 
   return { config: resolved, md, commits }
+}
+
+function extractTicketNumber(commits: Commit[], options: ResolvedChangelogOptions) {
+  commits.forEach((c) => {
+    c.references = c.references || []
+    const ticketRE = new RegExp(`(?:${options.ticketPrefix.join('|')})-\\d+`, 'gm')
+    const ticketSection = c.body.split('#').find(a => a.includes(` ${options.ticketSectionTitle}`))
+    let matchs = Array.from(ticketSection
+      ?.matchAll(ticketRE) || [])
+      .map(m => m[0])
+    matchs = [...new Set(matchs)]
+    for (const m of matchs) {
+      c.references?.push({ type: 'youtrack', value: m })
+      c.description = c.description.replace(`(${m})`, '').trim()
+    }
+  })
 }
