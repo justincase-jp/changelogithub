@@ -64,6 +64,10 @@ export interface ChangelogOptions extends Partial<ChangelogenOptions> {
    */
   ticketSectionTitle?: string
   /**
+   * YouTrack domain
+   */
+  youtrackDomain?: string
+  /**
    * Capitalize commit messages
    * @default true
    */

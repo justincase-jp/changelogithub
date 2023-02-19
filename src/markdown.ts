@@ -4,7 +4,7 @@ import type { Commit, Reference, ResolvedChangelogOptions } from './types'
 
 const emojisRE = /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g
 
-function formatReferences(references: Reference[], github: string, type: 'issues' | 'hash' | 'youtrack'): string {
+function formatReferences(references: Reference[], options: ResolvedChangelogOptions, type: 'issues' | 'hash' | 'youtrack'): string {
   const refs = references
     .filter((i) => {
       if (type === 'issues')
@@ -14,15 +14,15 @@ function formatReferences(references: Reference[], github: string, type: 'issues
       return i.type === 'hash'
     })
     .map((ref) => {
-      if (!github)
+      if (!options.github)
         return ref.value
       if (ref.type === 'issue')
-        return `[${ref.value}](https://github.com/${github}/issues/${ref.value.slice(1)})`
+        return `[${ref.value}](https://github.com/${options.github}/issues/${ref.value.slice(1)})`
       if (ref.type === 'pull-request')
-        return `[${ref.value}](https://github.com/${github}/pull/${ref.value.slice(1)})`
+        return `[${ref.value}](https://github.com/${options.github}/pull/${ref.value.slice(1)})`
       if (ref.type === 'youtrack')
-        return `([${ref.value}](https://justincase.myjetbrains.com/issue/${ref.value}))`
-      return `[<samp>(${ref.value.slice(0, 5)})</samp>](https://github.com/${github}/commit/${ref.value})`
+        return `([${ref.value}](https://${options.youtrackDomain}/issue/${ref.value}))`
+      return `[<samp>(${ref.value.slice(0, 5)})</samp>](https://github.com/${options.github}/commit/${ref.value})`
     })
 
   const referencesString = join(refs, undefined, type === 'youtrack' ? '' : undefined).trim()
@@ -33,9 +33,9 @@ function formatReferences(references: Reference[], github: string, type: 'issues
 }
 
 function formatLine(commit: Commit, options: ResolvedChangelogOptions) {
-  const prRefs = formatReferences(commit.references || [], options.github, 'issues')
-  const hashRefs = formatReferences(commit.references || [], options.github, 'hash')
-  const youtrackRefs = formatReferences(commit.references || [], options.github, 'youtrack')
+  const prRefs = formatReferences(commit.references || [], options, 'issues')
+  const hashRefs = formatReferences(commit.references || [], options, 'hash')
+  const youtrackRefs = formatReferences(commit.references || [], options, 'youtrack')
 
   let authors = join([...new Set(commit.resolvedAuthors?.map(i => i.login ? `@${i.login}` : `**${i.name}**`))])?.trim()
   if (authors)
