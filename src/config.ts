@@ -29,6 +29,7 @@ const defaultConfig: ChangelogOptions = {
   group: true,
   ticketPrefix: [],
   ticketSectionTitle: 'Motivation',
+  youtrackDomain: 'justincase.myjetbrains.com',
 }
 
 export async function resolveConfig(options: ChangelogOptions) {
