@@ -27,9 +27,11 @@ export async function generate(options: ChangelogOptions) {
 }
 
 function extractTicketNumber(commits: Commit[], options: ResolvedChangelogOptions) {
+  if (!options.ticketPrefix.length) return
+
+  const ticketRE = new RegExp(`((?:${options.ticketPrefix.join('|')})-\\d+)`, 'gm')
   commits.forEach((c) => {
     c.references = c.references || []
-    const ticketRE = new RegExp(`(?:${options.ticketPrefix.join('|')})-\\d+`, 'gm')
     const ticketSection = c.body.split('#').find(a => a.includes(` ${options.ticketSectionTitle}`))
     let matchs = Array.from(ticketSection
       ?.matchAll(ticketRE) || [])
