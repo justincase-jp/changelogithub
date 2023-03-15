@@ -38,6 +38,10 @@ export interface ChangelogOptions extends Partial<ChangelogenOptions> {
    */
   name?: string
   /**
+   * GitHub repository
+   */
+  github?: string
+  /**
    * Mark the release as a draft
    */
   draft?: boolean
