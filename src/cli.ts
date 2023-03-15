@@ -31,6 +31,12 @@ cli
       console.log()
       console.log(dim(`changelo${bold('github')} `) + dim(`v${version}`))
 
+      if (!args.token) {
+        console.error(red('No GitHub token found, specify it via GITHUB_TOKEN env.'))
+        process.exitCode = 1
+        return
+      }
+
       const { config, md, commits } = await generate(args as any)
 
       console.log(cyan(config.from) + dim(' -> ') + blue(config.to) + dim(` (${commits.length} commits)`))
@@ -42,12 +48,6 @@ cli
 
       if (config.dry) {
         console.log(yellow('Dry run. Release skipped.'))
-        return
-      }
-
-      if (!config.token) {
-        console.error(red('No GitHub token found, specify it via GITHUB_TOKEN env. Release skipped.'))
-        process.exitCode = 1
         return
       }
 
