@@ -38,6 +38,7 @@ export async function resolveConfig(options: ChangelogOptions) {
     name: 'changelogithub',
     defaults: defaultConfig,
     overrides: options,
+    packageJson: true,
   }).then(r => r.config || defaultConfig)
 
   config.from = config.from || await getLastGitTag()
