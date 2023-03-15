@@ -1,7 +1,7 @@
 {
   "name": "@jict/changelogithub",
   "type": "module",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "packageManager": "pnpm@7.29.1",
   "description": "Generate changelog for GitHub.",
   "keywords": [
