@@ -1,29 +1,26 @@
 import { notNullish } from '@antfu/utils'
 import { parseGitCommit } from 'changelogen'
-import { resolveConfig } from './config'
 import { getPullRequests, resolveAuthors } from './github'
 import { generateMarkdown } from './markdown'
 import type { ChangelogOptions, Commit, ResolvedChangelogOptions } from './types'
 
-export async function generate(options: ChangelogOptions) {
-  const resolved = await resolveConfig(options)
-
-  const pullRequests = await getPullRequests(resolved)
+export async function generate(config: Required<ChangelogOptions>) {
+  const pullRequests = await getPullRequests(config)
 
   const commits = pullRequests.map<Commit | null>(pr => parseGitCommit({
     message: `${pr.title}(#${pr.number})`,
     body: pr.body || '',
     shortHash: pr.merge_commit_sha?.slice(0, 7) || '',
     author: { name: pr.user?.login || '', email: '' },
-  }, resolved)).filter(notNullish)
+  }, config)).filter(notNullish)
 
-  extractTicketNumber(commits, resolved)
+  extractTicketNumber(commits, config)
 
-  if (resolved.contributors)
-    await resolveAuthors(commits, resolved)
-  const md = generateMarkdown(commits, resolved)
+  if (config.contributors)
+    await resolveAuthors(commits, config)
+  const md = generateMarkdown(commits, config)
 
-  return { config: resolved, md, commits }
+  return { md, commits }
 }
 
 function extractTicketNumber(commits: Commit[], options: ResolvedChangelogOptions) {

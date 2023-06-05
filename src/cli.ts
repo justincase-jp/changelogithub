@@ -2,7 +2,7 @@
 import { cac } from 'cac'
 import { blue, bold, cyan, dim, red, yellow } from 'kolorist'
 import { version } from '../package.json'
-import { generate, hasTagOnGitHub, isRepoShallow, sendRelease } from './index'
+import { generate, hasTagOnGitHub, isRepoShallow, resolveConfig, sendRelease } from './index'
 
 const cli = cac('changelogithub')
 
@@ -37,9 +37,14 @@ cli
         return
       }
 
-      const { config, md, commits } = await generate(args as any)
+      const config = await resolveConfig(args)
 
-      console.log(cyan(config.from) + dim(' -> ') + blue(config.to) + dim(` (${commits.length} commits)`))
+      console.log(cyan(config.from) + dim(' -> ') + blue(config.to))
+
+      const { md, commits } = await generate(config)
+
+      console.log(dim(` (${commits.length} PRs)`))
+
       console.log(dim('--------------'))
       console.log()
       console.log(md.replace(/&nbsp;/g, ''))
